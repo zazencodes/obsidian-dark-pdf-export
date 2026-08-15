@@ -37,6 +37,7 @@ export default defineConfig(
 		files: ['tests/**/*.ts'],
 		rules: {
 			'obsidianmd/prefer-create-el': 'off',
+			'@typescript-eslint/no-deprecated': 'off',
 		},
 	},
 );

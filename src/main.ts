@@ -1,6 +1,6 @@
 import { Plugin } from 'obsidian';
 
-import { BUNDLED_DEFAULT_VERSION, DEFAULT_STYLESHEET } from './default-stylesheet';
+import { DEFAULT_STYLESHEET } from './default-stylesheet';
 import {
 	SettingsController,
 	type RuntimeProjection,
@@ -20,12 +20,11 @@ export default class DarkPdfExportPlugin extends Plugin {
 		};
 		const runtime: RuntimeProjection = {
 			project: (settings) => {
-				this.styleRegistry?.setCss(settings.active.css);
 				this.styleRegistry?.setEnabled(settings.enabled);
+				this.app.workspace.trigger('parse-style-settings');
 			},
 		};
 		const settingsController = new SettingsController(
-			{ css: DEFAULT_STYLESHEET, version: BUNDLED_DEFAULT_VERSION },
 			persistence,
 			runtime,
 		);
@@ -34,24 +33,30 @@ export default class DarkPdfExportPlugin extends Plugin {
 		if (settingsController.isClosed) return;
 
 		const settings = settingsController.state;
-		const styleRegistry = new DocumentStyleRegistry(settings.active.css, settings.enabled);
+		const styleRegistry = new DocumentStyleRegistry(DEFAULT_STYLESHEET, settings.enabled);
 		this.styleRegistry = styleRegistry;
 		this.addSettingTab(new DarkPdfExportSettingTab(this.app, this, settingsController));
 
-		const documents = new Set<Document>([this.app.workspace.rootSplit.doc]);
-		this.app.workspace.iterateAllLeaves((leaf) => {
-			documents.add(leaf.view.containerEl.ownerDocument);
+		if (typeof document !== 'undefined') {
+			styleRegistry.addDocument(document);
+		}
+		this.app.workspace.trigger('parse-style-settings');
+
+		this.app.workspace.onLayoutReady(() => {
+			this.app.workspace.iterateAllLeaves((leaf) => {
+				const doc = leaf.view?.containerEl?.ownerDocument;
+				if (doc) styleRegistry.addDocument(doc);
+			});
 		});
-		for (const target of documents) styleRegistry.addDocument(target);
 
 		this.registerEvent(
 			this.app.workspace.on('window-open', (workspaceWindow) => {
-				styleRegistry.addDocument(workspaceWindow.doc);
+				if (workspaceWindow?.doc) styleRegistry.addDocument(workspaceWindow.doc);
 			}),
 		);
 		this.registerEvent(
 			this.app.workspace.on('window-close', (workspaceWindow) => {
-				styleRegistry.removeDocument(workspaceWindow.doc);
+				if (workspaceWindow?.doc) styleRegistry.removeDocument(workspaceWindow.doc);
 			}),
 		);
 	}

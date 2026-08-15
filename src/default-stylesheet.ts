@@ -1,5 +1,3 @@
-export const BUNDLED_DEFAULT_VERSION = '1.0.1';
-
 export const DEFAULT_STYLESHEET = `body {
   --dark-pdf-background: #0b0b0b;
   --dark-pdf-surface: #161616;
