@@ -1,6 +1,8 @@
 # Dark PDF Export
 
-Dark PDF Export is a desktop plugin for Obsidian that applies a stable dark stylesheet to Obsidian's native **Export to PDF** workflow.
+Dark PDF Export is a desktop plugin for Obsidian by [ZazenCodes](https://zazencodes.com/).
+
+It applies a stable dark stylesheet to Obsidian's native **Export to PDF** workflow.
 
 Styles can be customized interactively using the **Style Settings** community plugin.
 
