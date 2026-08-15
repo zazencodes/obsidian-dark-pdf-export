@@ -1,7 +1,7 @@
 {
 	"name": "obsidian-dark-pdf-export",
-	"version": "1.0.0",
-	"description": "Export Obsidian notes as clean dark-mode PDFs using the native PDF exporter.",
+	"version": "1.0.1",
+	"description": "Export notes as clean dark-mode PDFs using the native PDF exporter.",
 	"main": "main.js",
 	"type": "module",
 	"scripts": {

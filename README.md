@@ -6,6 +6,8 @@ It applies a stable dark stylesheet to Obsidian's native **Export to PDF** workf
 
 Styles can be customized interactively using the **Style Settings** community plugin.
 
+🔗 **[Get it on Obsidian Community Plugins](https://community.obsidian.md/plugins/dark-pdf-export)**
+
 ![Dark PDF Export Comparison](assets/dark-pdf-export-comparison.png)
 
 ## Use
@@ -57,7 +59,7 @@ npm run typecheck
 npm run lint -- --max-warnings=0
 npm test
 npm run build
-npm run release:validate -- 1.0.0
+npm run release:validate -- 1.0.1
 ```
 
 `npm run dev` starts the esbuild watcher. Production builds are minified and write the `main.js` bundle. A release consists of `main.js`, `manifest.json`, and `styles.css` from one production build.
