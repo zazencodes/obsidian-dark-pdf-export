@@ -22,8 +22,8 @@ export class DocumentStyleRegistry {
 		return this.documents.size;
 	}
 
-	addDocument(target: Document): void {
-		if (this.closed || this.isClosedDocument(target) || target.head === null) {
+	addDocument(target: Document | null | undefined): void {
+		if (this.closed || !target || !target.head || this.isClosedDocument(target)) {
 			return;
 		}
 
@@ -35,7 +35,8 @@ export class DocumentStyleRegistry {
 		}
 	}
 
-	removeDocument(target: Document): void {
+	removeDocument(target: Document | null | undefined): void {
+		if (!target) return;
 		this.removeMarkedStyles(target);
 		this.documents.delete(target);
 	}
