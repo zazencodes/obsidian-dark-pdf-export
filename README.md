@@ -1,8 +1,36 @@
 # Dark PDF Export
 
-Dark PDF Export is a focused desktop plugin for Obsidian. It applies a stable dark stylesheet to Obsidian's native **Export to PDF** workflow, including the printed page box that can otherwise remain white.
+Dark PDF Export is a desktop plugin for Obsidian that applies a stable dark stylesheet to Obsidian's native **Export to PDF** workflow.
 
-It does not replace Obsidian's PDF renderer, add a second export command, restyle embedded PDFs, or change note content.
+Styles can be customized interactively using the **Style Settings** community plugin.
+
+![Dark PDF Export Comparison](assets/dark-pdf-export-comparison.png)
+
+## Use
+
+Install "Dark PDF Export" from the Obsidian community plugins marketplace or
+[install manually](#manual-installation).
+
+Enable the plugin, open a note, and use Obsidian's native **Export to PDF** command. Dark PDF styling is enabled by default when the plugin is first turned on.
+
+The plugin settings page under **Settings → Community plugins → Dark PDF Export** contains a toggle:
+
+- **Enable dark PDF styling** turns dark PDF export styling on or off.
+
+## Customizing Styles
+
+Use the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) community plugin. Dark PDF Export automatically registers a configuration panel under **Settings → Style Settings → Dark PDF Export**.
+
+You can visually customize color swatches using native color pickers for:
+- **Page background** (`--dark-pdf-background`): The base background color for the PDF page.
+- **Surface background** (`--dark-pdf-surface`): Background for code blocks, inline code, and callouts.
+- **Border color** (`--dark-pdf-border`): Borders for tables, blockquotes, and dividers.
+- **Body text** (`--dark-pdf-text`): Main paragraph and list text.
+- **Headings** (`--dark-pdf-heading`): Headings H1 through H6 and inline titles.
+- **Muted text** (`--dark-pdf-muted`): Faint metadata, footnotes, and secondary text.
+- **Links and accents** (`--dark-pdf-accent`): Internal/external links and highlighted accents.
+
+Changes made in Style Settings take effect immediately on your next export without requiring a vault reload.
 
 ## Manual installation
 
@@ -11,29 +39,7 @@ It does not replace Obsidian's PDF renderer, add a second export command, restyl
 3. Copy all three files into that folder.
 4. Restart or reload Obsidian, then enable **Dark PDF Export** under **Settings → Community plugins**.
 
-The folder name must match the plugin ID: `dark-pdf-export`. The plugin requires desktop Obsidian 1.13.7 or newer.
-
-## Use
-
-Enable the plugin, open a note, and use Obsidian's native **Export to PDF** command. Dark PDF styling is on when the plugin is first enabled.
-
-The settings page contains one toggle and the complete effective CSS stylesheet:
-
-- **Enable dark PDF styling** detaches or restores the saved stylesheet without deleting it.
-- Editing CSS changes a saved draft only. Select **Apply** to validate and activate the draft.
-- **Reset** asks for confirmation, then replaces both the draft and active CSS with the defaults shipped in the installed plugin version.
-
-### Complete CSS and resource safety
-
-The editor accepts a complete stylesheet, not an override fragment. The shipped CSS is print-scoped, but your CSS does not have to be. Selectors outside `@media print` can change the Obsidian interface. Keep a recoverable copy of substantial customizations and use Reset if a rule makes the interface hard to use.
-
-Apply rejects fatal CSS syntax errors, `@import`, protocol-relative URLs, and remote resource URLs. This prevents custom CSS from initiating network requests for fonts, images, or stylesheets. The last working stylesheet remains active when validation fails, and the draft stays available for correction.
-
-## Compatibility
-
-Dark PDF Export is desktop-only because it depends on Obsidian's desktop PDF export. Version 1.0.0 requires Obsidian 1.13.7 or newer. The built-in palette does not inherit the active theme and is designed to work while Obsidian itself uses either light or dark mode.
-
-Obsidian or Chromium print changes may affect future exports. Verify page edges, backgrounds, code blocks, tables, callouts, links, and images after updating Obsidian or this plugin.
+The folder name must match the plugin ID: `dark-pdf-export`. The plugin requires desktop Obsidian 1.12.0 or newer.
 
 ## Privacy and safety
 
@@ -52,7 +58,7 @@ npm run build
 npm run release:validate -- 1.0.0
 ```
 
-`npm run dev` starts the esbuild watcher. Production builds are minified and write the ignored `main.js` bundle. A release consists of `main.js`, `manifest.json`, and `styles.css` from one production build.
+`npm run dev` starts the esbuild watcher. Production builds are minified and write the `main.js` bundle. A release consists of `main.js`, `manifest.json`, and `styles.css` from one production build.
 
 ## Releases
 
