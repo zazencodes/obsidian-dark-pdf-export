@@ -28,22 +28,23 @@ export const DEFAULT_STYLESHEET = `body {
   }
 
   body,
-  body.print {
-    --background-primary: var(--dark-pdf-background);
-    --background-primary-alt: var(--dark-pdf-surface);
-    --background-secondary: var(--dark-pdf-surface);
-    --background-secondary-alt: var(--dark-pdf-surface);
-    --background-modifier-border: var(--dark-pdf-border);
-    --background-modifier-border-hover: var(--dark-pdf-border);
-    --code-background: var(--dark-pdf-surface);
-    --text-normal: var(--dark-pdf-text);
-    --text-muted: var(--dark-pdf-muted);
-    --text-faint: var(--dark-pdf-muted);
-    --text-accent: var(--dark-pdf-accent);
-    --text-accent-hover: var(--dark-pdf-accent);
-    --interactive-accent: var(--dark-pdf-accent);
-    --blockquote-border-color: var(--dark-pdf-border);
-    --table-border-color: var(--dark-pdf-border);
+  body.print,
+  body[class] {
+    --background-primary: var(--dark-pdf-background) !important;
+    --background-primary-alt: var(--dark-pdf-surface) !important;
+    --background-secondary: var(--dark-pdf-surface) !important;
+    --background-secondary-alt: var(--dark-pdf-surface) !important;
+    --background-modifier-border: var(--dark-pdf-border) !important;
+    --background-modifier-border-hover: var(--dark-pdf-border) !important;
+    --code-background: var(--dark-pdf-surface) !important;
+    --text-normal: var(--dark-pdf-text) !important;
+    --text-muted: var(--dark-pdf-muted) !important;
+    --text-faint: var(--dark-pdf-muted) !important;
+    --text-accent: var(--dark-pdf-accent) !important;
+    --text-accent-hover: var(--dark-pdf-accent) !important;
+    --interactive-accent: var(--dark-pdf-accent) !important;
+    --blockquote-border-color: var(--dark-pdf-border) !important;
+    --table-border-color: var(--dark-pdf-border) !important;
   }
 
   .print :is(.inline-title, h1, h2, h3, h4, h5, h6) {
@@ -57,6 +58,45 @@ export const DEFAULT_STYLESHEET = `body {
   .print :is(pre, code, table, blockquote, .callout, .metadata-container) {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+  }
+
+  .print :is(pre, code, .cm-s-obsidian, .HyperMD-codeblock),
+  .print :is(pre, code, .cm-s-obsidian, .HyperMD-codeblock)[class] {
+    background-color: #161616 !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: #c8c8c8 !important;
+    border-color: #363636 !important;
+  }
+
+  /* Themes paint code blocks with a gradient shorthand (e.g. code-tactile),
+     which a background-color override alone cannot clear. */
+  .print :is(pre, .callout, blockquote, .markdown-rendered pre, .markdown-preview-view pre) {
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  .print :is(pre code, pre .token, pre span) {
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+
+  .print pre .copy-code-button {
+    display: none !important;
+  }
+
+  .print pre {
+    overflow: visible !important;
+  }
+
+  .print :is(table, thead, tbody, tr, th, td) {
+    background-color: var(--dark-pdf-surface) !important;
+    color: var(--dark-pdf-text) !important;
+    border-color: var(--dark-pdf-border) !important;
+  }
+
+  .print :is(th, .inline-title, h1, h2, h3, h4, h5, h6) {
+    color: var(--dark-pdf-heading) !important;
   }
 }
 `;
