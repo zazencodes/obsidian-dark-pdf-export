@@ -1,6 +1,6 @@
 import { Plugin } from 'obsidian';
 
-import { DEFAULT_STYLESHEET } from './default-stylesheet';
+import { createStylesheet } from './default-stylesheet';
 import {
 	SettingsController,
 	type RuntimeProjection,
@@ -21,6 +21,7 @@ export default class DarkPdfExportPlugin extends Plugin {
 		const runtime: RuntimeProjection = {
 			project: (settings) => {
 				this.styleRegistry?.setEnabled(settings.enabled);
+				this.styleRegistry?.setCss(createStylesheet(settings.pageMargin));
 				this.app.workspace.trigger('parse-style-settings');
 			},
 		};
@@ -33,7 +34,10 @@ export default class DarkPdfExportPlugin extends Plugin {
 		if (settingsController.isClosed) return;
 
 		const settings = settingsController.state;
-		const styleRegistry = new DocumentStyleRegistry(DEFAULT_STYLESHEET, settings.enabled);
+		const styleRegistry = new DocumentStyleRegistry(
+			createStylesheet(settings.pageMargin),
+			settings.enabled,
+		);
 		this.styleRegistry = styleRegistry;
 		this.addSettingTab(new DarkPdfExportSettingTab(this.app, this, settingsController));
 

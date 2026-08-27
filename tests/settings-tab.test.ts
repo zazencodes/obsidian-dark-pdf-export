@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { App, Plugin } from 'obsidian';
 
+import { DEFAULT_PAGE_MARGIN } from '../src/default-stylesheet';
 import {
 	SettingsController,
 	type RuntimeProjection,
@@ -50,6 +51,38 @@ vi.mock('obsidian', () => {
 		}
 	}
 
+	class TextComponent extends BaseComponent {
+		inputEl: HTMLInputElement;
+		private callback: ((value: string) => unknown) | null = null;
+
+		constructor(containerEl: HTMLElement) {
+			super();
+			this.inputEl = document.createElement('input');
+			this.inputEl.type = 'text';
+			this.inputEl.addEventListener('change', () => this.callback?.(this.inputEl.value));
+			containerEl.append(this.inputEl);
+		}
+
+		setPlaceholder(text: string): this {
+			this.inputEl.placeholder = text;
+			return this;
+		}
+
+		setValue(value: string): this {
+			this.inputEl.value = value;
+			return this;
+		}
+
+		getValue(): string {
+			return this.inputEl.value;
+		}
+
+		onChange(callback: (value: string) => unknown): this {
+			this.callback = callback;
+			return this;
+		}
+	}
+
 	class Setting {
 		settingEl: HTMLElement;
 		infoEl: HTMLElement;
@@ -86,6 +119,11 @@ vi.mock('obsidian', () => {
 
 		addToggle(callback: (toggle: ToggleComponent) => unknown): this {
 			callback(new ToggleComponent(this.controlEl));
+			return this;
+		}
+
+		addText(callback: (text: TextComponent) => unknown): this {
+			callback(new TextComponent(this.controlEl));
 			return this;
 		}
 	}
@@ -149,10 +187,17 @@ describe('DarkPdfExportSettingTab', () => {
 		expect(toggle).not.toBeNull();
 		expect(toggle?.checked).toBe(true);
 
+		const marginInput = tab.containerEl.querySelector<HTMLInputElement>('input[type="text"]');
+		expect(marginInput).not.toBeNull();
+		expect(marginInput?.value).toBe(DEFAULT_PAGE_MARGIN);
+		expect(marginInput?.placeholder).toBe(DEFAULT_PAGE_MARGIN);
+
 		const definitions = tab.getSettingDefinitions();
-		expect(definitions).toHaveLength(1);
+		expect(definitions).toHaveLength(2);
 		const firstDef = definitions[0];
 		expect(firstDef && 'name' in firstDef ? firstDef.name : '').toBe('Enable dark PDF styling');
+		const secondDef = definitions[1];
+		expect(secondDef && 'name' in secondDef ? secondDef.name : '').toBe('Page margin');
 	});
 
 	it('toggles the enabled setting when user changes switch', async () => {
@@ -171,7 +216,42 @@ describe('DarkPdfExportSettingTab', () => {
 		await Promise.resolve();
 
 		expect(controller.state.enabled).toBe(false);
-		expect(persistence.saves).toEqual([{ enabled: false }]);
-		expect(runtime.snapshots).toEqual([{ enabled: true }, { enabled: false }]);
+		expect(persistence.saves).toEqual([{ enabled: false, pageMargin: DEFAULT_PAGE_MARGIN }]);
+		expect(runtime.snapshots).toEqual([
+			{ enabled: true, pageMargin: DEFAULT_PAGE_MARGIN },
+			{ enabled: false, pageMargin: DEFAULT_PAGE_MARGIN },
+		]);
+	});
+
+	it('saves a valid page margin and rejects an invalid one', async () => {
+		const persistence = new MemoryPersistence({ enabled: true });
+		const runtime = projection();
+		const controller = new SettingsController(persistence, runtime);
+		await controller.load();
+
+		const tab = new DarkPdfExportSettingTab(dummyApp, dummyPlugin, controller);
+		tab.display();
+
+		const marginInput = tab.containerEl.querySelector<HTMLInputElement>('input[type="text"]')!;
+		marginInput.value = '20mm 10mm';
+		marginInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+		await Promise.resolve();
+
+		expect(controller.state.pageMargin).toBe('20mm 10mm');
+		expect(marginInput.classList.contains('dark-pdf-export-invalid-margin')).toBe(false);
+
+		marginInput.value = 'margin; } body { display: none';
+		marginInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+		await Promise.resolve();
+
+		expect(controller.state.pageMargin).toBe('20mm 10mm');
+		expect(marginInput.classList.contains('dark-pdf-export-invalid-margin')).toBe(true);
+		expect(persistence.saves).toEqual([{ enabled: true, pageMargin: '20mm 10mm' }]);
+		expect(runtime.snapshots).toEqual([
+			{ enabled: true, pageMargin: DEFAULT_PAGE_MARGIN },
+			{ enabled: true, pageMargin: '20mm 10mm' },
+		]);
 	});
 });

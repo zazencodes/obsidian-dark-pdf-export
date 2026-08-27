@@ -47,3 +47,6 @@ settings:
     default: '#b18cfe'
 
 */
+.dark-pdf-export-invalid-margin {
+	border-color: var(--text-error) !important;
+}

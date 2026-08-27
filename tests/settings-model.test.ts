@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { DEFAULT_PAGE_MARGIN } from '../src/default-stylesheet';
 import {
 	DEFAULT_SETTINGS,
 	SettingsController,
@@ -43,7 +44,7 @@ describe('SettingsController', () => {
 		await controller.load();
 
 		expect(controller.state).toEqual(DEFAULT_SETTINGS);
-		expect(runtime.snapshots).toEqual([{ enabled: true }]);
+		expect(runtime.snapshots).toEqual([{ enabled: true, pageMargin: DEFAULT_PAGE_MARGIN }]);
 	});
 
 	it('loads stored enabled setting', async () => {
@@ -53,8 +54,8 @@ describe('SettingsController', () => {
 
 		await controller.load();
 
-		expect(controller.state).toEqual({ enabled: false });
-		expect(runtime.snapshots).toEqual([{ enabled: false }]);
+		expect(controller.state).toEqual({ enabled: false, pageMargin: DEFAULT_PAGE_MARGIN });
+		expect(runtime.snapshots).toEqual([{ enabled: false, pageMargin: DEFAULT_PAGE_MARGIN }]);
 	});
 
 	it('falls back to default enabled setting for invalid data', async () => {
@@ -64,8 +65,8 @@ describe('SettingsController', () => {
 
 		await controller.load();
 
-		expect(controller.state).toEqual({ enabled: true });
-		expect(runtime.snapshots).toEqual([{ enabled: true }]);
+		expect(controller.state).toEqual({ enabled: true, pageMargin: DEFAULT_PAGE_MARGIN });
+		expect(runtime.snapshots).toEqual([{ enabled: true, pageMargin: DEFAULT_PAGE_MARGIN }]);
 	});
 
 	it('persists and projects enabled changes', async () => {
@@ -76,9 +77,12 @@ describe('SettingsController', () => {
 		await controller.load();
 		await controller.setEnabled(false);
 
-		expect(controller.state).toEqual({ enabled: false });
-		expect(persistence.saves).toEqual([{ enabled: false }]);
-		expect(runtime.snapshots).toEqual([{ enabled: true }, { enabled: false }]);
+		expect(controller.state).toEqual({ enabled: false, pageMargin: DEFAULT_PAGE_MARGIN });
+		expect(persistence.saves).toEqual([{ enabled: false, pageMargin: DEFAULT_PAGE_MARGIN }]);
+		expect(runtime.snapshots).toEqual([
+			{ enabled: true, pageMargin: DEFAULT_PAGE_MARGIN },
+			{ enabled: false, pageMargin: DEFAULT_PAGE_MARGIN },
+		]);
 	});
 
 	it('does not save or project when enabled value is unchanged', async () => {
@@ -90,7 +94,60 @@ describe('SettingsController', () => {
 		await controller.setEnabled(true);
 
 		expect(persistence.saves).toHaveLength(0);
-		expect(runtime.snapshots).toEqual([{ enabled: true }]);
+		expect(runtime.snapshots).toEqual([{ enabled: true, pageMargin: DEFAULT_PAGE_MARGIN }]);
+	});
+
+	it('loads a stored valid page margin', async () => {
+		const persistence = new MemoryPersistence({ enabled: true, pageMargin: '20mm' });
+		const runtime = projection();
+		const controller = new SettingsController(persistence, runtime);
+
+		await controller.load();
+
+		expect(controller.state).toEqual({ enabled: true, pageMargin: '20mm' });
+	});
+
+	it('falls back to the default page margin for invalid stored data', async () => {
+		const persistence = new MemoryPersistence({
+			enabled: true,
+			pageMargin: 'body { display: none }',
+		});
+		const runtime = projection();
+		const controller = new SettingsController(persistence, runtime);
+
+		await controller.load();
+
+		expect(controller.state).toEqual({ enabled: true, pageMargin: DEFAULT_PAGE_MARGIN });
+	});
+
+	it('persists and projects page margin changes', async () => {
+		const persistence = new MemoryPersistence({ enabled: true });
+		const runtime = projection();
+		const controller = new SettingsController(persistence, runtime);
+
+		await controller.load();
+		await controller.setPageMargin('10mm 20mm');
+
+		expect(controller.state.pageMargin).toBe('10mm 20mm');
+		expect(persistence.saves).toEqual([{ enabled: true, pageMargin: '10mm 20mm' }]);
+		expect(runtime.snapshots).toEqual([
+			{ enabled: true, pageMargin: DEFAULT_PAGE_MARGIN },
+			{ enabled: true, pageMargin: '10mm 20mm' },
+		]);
+	});
+
+	it('ignores invalid or unchanged page margins', async () => {
+		const persistence = new MemoryPersistence({ enabled: true });
+		const runtime = projection();
+		const controller = new SettingsController(persistence, runtime);
+
+		await controller.load();
+		await controller.setPageMargin('not a margin');
+		await controller.setPageMargin(DEFAULT_PAGE_MARGIN);
+
+		expect(controller.state.pageMargin).toBe(DEFAULT_PAGE_MARGIN);
+		expect(persistence.saves).toHaveLength(0);
+		expect(runtime.snapshots).toEqual([{ enabled: true, pageMargin: DEFAULT_PAGE_MARGIN }]);
 	});
 
 	it('ignores operations after controller is closed', async () => {
@@ -103,6 +160,7 @@ describe('SettingsController', () => {
 
 		await controller.load();
 		await controller.setEnabled(false);
+		await controller.setPageMargin('20mm');
 
 		expect(persistence.saves).toHaveLength(0);
 		expect(runtime.snapshots).toHaveLength(0);

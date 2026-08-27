@@ -1,4 +1,15 @@
-export const DEFAULT_STYLESHEET = `body {
+export const DEFAULT_PAGE_MARGIN = '14mm 12mm';
+
+const PAGE_MARGIN_PATTERN =
+	/^\d+(\.\d+)?(mm|cm|in|pt|pc|px|em|rem)?(\s+\d+(\.\d+)?(mm|cm|in|pt|pc|px|em|rem)?){0,3}$/i;
+
+export function isValidPageMargin(value: string): boolean {
+	return PAGE_MARGIN_PATTERN.test(value.trim());
+}
+
+export function createStylesheet(pageMargin: string = DEFAULT_PAGE_MARGIN): string {
+	const margin = isValidPageMargin(pageMargin) ? pageMargin.trim() : DEFAULT_PAGE_MARGIN;
+	return `body {
   --dark-pdf-background: #0b0b0b;
   --dark-pdf-surface: #161616;
   --dark-pdf-border: #363636;
@@ -9,7 +20,7 @@ export const DEFAULT_STYLESHEET = `body {
 }
 
 @page {
-  margin: 14mm 12mm;
+  margin: ${margin};
   background: #0b0b0b;
 }
 
@@ -113,3 +124,6 @@ export const DEFAULT_STYLESHEET = `body {
   }
 }
 `;
+}
+
+export const DEFAULT_STYLESHEET = createStylesheet();

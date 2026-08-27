@@ -17,9 +17,10 @@ Install "Dark PDF Export" from the Obsidian community plugins marketplace or
 
 Enable the plugin, open a note, and use Obsidian's native **Export to PDF** command. Dark PDF styling is enabled by default when the plugin is first turned on.
 
-The plugin settings page under **Settings → Community plugins → Dark PDF Export** contains a toggle:
+The plugin settings page under **Settings → Community plugins → Dark PDF Export** contains:
 
 - **Enable dark PDF styling** turns dark PDF export styling on or off.
+- **Page margin** sets the space around content on every exported page. It accepts one to four CSS lengths (e.g. `14mm 12mm`) and defaults to `14mm 12mm`.
 
 ## Customizing Styles
 
@@ -35,6 +36,8 @@ You can visually customize color swatches using native color pickers for:
 - **Links and accents** (`--dark-pdf-accent`): Internal/external links and highlighted accents.
 
 Changes made in Style Settings take effect immediately on your next export without requiring a vault reload.
+
+Page margin is configured on the plugin's own settings page rather than through Style Settings, because `@page` rules cannot read the body-level CSS variables that Style Settings writes.
 
 ## Manual installation
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { DEFAULT_STYLESHEET } from '../src/default-stylesheet';
+import { createStylesheet, DEFAULT_STYLESHEET } from '../src/default-stylesheet';
 import { DocumentStyleRegistry, STYLE_MARKER_ATTRIBUTE } from '../src/style-manager';
 
 const DEFAULT_CSS = DEFAULT_STYLESHEET;
@@ -21,6 +21,16 @@ describe('DocumentStyleRegistry', () => {
 		expect(DEFAULT_STYLESHEET).toContain('@media print');
 		expect(DEFAULT_STYLESHEET).not.toContain('@settings');
 		expect(DEFAULT_STYLESHEET).not.toMatch(/filter\s*:\s*invert/i);
+	});
+
+	it('renders a configurable page margin and rejects unsafe values', () => {
+		expect(createStylesheet('20mm 10mm')).toContain(
+			'@page {\n  margin: 20mm 10mm;\n  background: #0b0b0b;\n}',
+		);
+		expect(createStylesheet('0')).toContain('margin: 0;');
+		expect(createStylesheet('10mm; } body { display: none; }')).toContain(
+			'margin: 14mm 12mm;',
+		);
 	});
 
 	it('attaches exactly one marked style containing the effective CSS', () => {
