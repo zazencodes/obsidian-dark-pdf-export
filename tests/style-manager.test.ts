@@ -17,7 +17,7 @@ function createDocument(): Document {
 
 describe('DocumentStyleRegistry', () => {
 	it('ships the opaque page fallback without duplicate Style Settings metadata or media inversion', () => {
-		expect(DEFAULT_STYLESHEET).toContain('@page {\n  margin: 0;\n  background: #0b0b0b;\n}');
+		expect(DEFAULT_STYLESHEET).toContain('@page {\n  margin: 14mm 12mm;\n  background: #0b0b0b;\n}');
 		expect(DEFAULT_STYLESHEET).toContain('@media print');
 		expect(DEFAULT_STYLESHEET).not.toContain('@settings');
 		expect(DEFAULT_STYLESHEET).not.toMatch(/filter\s*:\s*invert/i);

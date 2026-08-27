@@ -9,7 +9,7 @@ export const DEFAULT_STYLESHEET = `body {
 }
 
 @page {
-  margin: 0;
+  margin: 14mm 12mm;
   background: #0b0b0b;
 }
 
@@ -93,6 +93,19 @@ export const DEFAULT_STYLESHEET = `body {
     background-color: var(--dark-pdf-surface) !important;
     color: var(--dark-pdf-text) !important;
     border-color: var(--dark-pdf-border) !important;
+  }
+
+  .print :is(pre, table, blockquote, .callout, img) {
+    break-inside: avoid;
+  }
+
+  .print :is(.inline-title, h1, h2, h3, h4, h5, h6) {
+    break-after: avoid;
+  }
+
+  .print p {
+    orphans: 3;
+    widows: 3;
   }
 
   .print :is(th, .inline-title, h1, h2, h3, h4, h5, h6) {
